@@ -1,0 +1,347 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #172033;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #e8eef8;
+  color: #172033;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: #dbe5f4;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+}
+
+.primary {
+  background: #2448f2;
+  color: #ffffff;
+}
+
+.primary:hover {
+  background: #1638ce;
+}
+
+.danger {
+  background: #ffe3e3;
+  color: #b42318;
+}
+
+.danger:hover {
+  background: #ffd0d0;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 20px;
+}
+
+
+.panel {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 14px 40px rgba(23, 32, 51, 0.08);
+}
+
+.student-title {
+  width: min(520px, 100%);
+  margin: 0;
+  text-align: left;
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+}
+
+.auth-panel {
+  width: min(520px, 100%);
+}
+
+.tabs,
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.tabs button,
+.nav-tabs button {
+  flex: 1;
+}
+
+.tabs .active,
+.nav-tabs .active {
+  background: #2448f2;
+  color: #ffffff;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #d9e2f1;
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: #172033;
+  background: #ffffff;
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.hint {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #f4f7fb;
+  color: #526079;
+  font-size: 14px;
+}
+
+.hint p {
+  margin: 4px 0;
+}
+
+.message,
+.global-error {
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.error,
+.global-error {
+  background: #ffe3e3;
+  color: #b42318;
+}
+
+.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.loader {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.app-shell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.topbar h1 {
+  margin: 6px 0 0;
+  font-size: 40px;
+}
+
+.user-box {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 18px;
+  box-shadow: 0 12px 34px rgba(23, 32, 51, 0.08);
+}
+
+.user-box strong {
+  color: #2448f2;
+}
+
+.nav-tabs {
+  max-width: 420px;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+.section-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.section-head h2,
+.panel h2 {
+  margin: 0 0 6px;
+}
+
+.section-head p,
+.muted {
+  color: #667085;
+  margin: 0;
+}
+
+.cards {
+  display: grid;
+  gap: 14px;
+}
+
+.product-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid #e6edf7;
+  border-radius: 22px;
+  background: #fbfdff;
+}
+
+.product-card h3 {
+  margin: 6px 0;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.card-actions strong {
+  min-width: 90px;
+  text-align: right;
+}
+
+.side-stack {
+  display: grid;
+  gap: 20px;
+}
+
+.detail-card p {
+  margin: 8px 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e6edf7;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  color: #667085;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+@media (max-width: 980px) {
+  .section-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-page {
+    padding: 20px;
+  }
+
+  .topbar,
+  .user-box,
+  .product-card {
+    align-items: stretch;
+    flex-direction: column;
+    display: flex;
+  }
+
+  .card-actions {
+    justify-content: flex-start;
+  }
+}

@@ -1,82 +1,109 @@
-import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
-const API_URL = 'http://localhost:3000/api';
+export function getTokens() {
+  return {
+    accessToken: localStorage.getItem('accessToken'),
+    refreshToken: localStorage.getItem('refreshToken')
+  };
+}
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+export function setTokens(tokens) {
+  localStorage.setItem('accessToken', tokens.accessToken);
+  localStorage.setItem('refreshToken', tokens.refreshToken);
+}
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+export function clearTokens() {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+}
+
+async function parseResponse(response) {
+  const text = await response.text();
+  if (!text) {
+    return null;
   }
-  return config;
-});
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return text;
+  }
+}
 
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        localStorage.removeItem('accessToken');
-        if (originalRequest.url?.includes('/auth/me')) {
-          window.location.href = '/login';
-        }
-        return Promise.reject(error);
-      }
-
-      try {
-        const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
-
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
-
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        if (originalRequest.url?.includes('/auth/me')) {
-          window.location.href = '/login';
-        }
-        return Promise.reject(refreshError);
-      }
+async function refreshPair() {
+  const { refreshToken } = getTokens();
+  if (!refreshToken) {
+    throw new Error('Нет refresh-токена');
+  }
+  const response = await fetch(`${API_BASE}/api/auth/refresh`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${refreshToken}`
     }
-
-    return Promise.reject(error);
+  });
+  const data = await parseResponse(response);
+  if (!response.ok) {
+    clearTokens();
+    throw new Error(data?.error || 'Не удалось обновить токены');
   }
-);
+  setTokens(data);
+  return data;
+}
 
-export const authAPI = {
-  register: (data) => api.post('/auth/register', data),
-  login: (data) => api.post('/auth/login', data),
-  refresh: (refreshToken) => api.post('/auth/refresh', { refreshToken }),
-  me: () => api.get('/auth/me'),
-};
+export async function apiRequest(path, options = {}, retry = true) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+  const { accessToken } = getTokens();
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+  const requestOptions = {
+    ...options,
+    headers
+  };
+  if (requestOptions.body && typeof requestOptions.body !== 'string') {
+    requestOptions.body = JSON.stringify(requestOptions.body);
+  }
+  const response = await fetch(`${API_BASE}${path}`, requestOptions);
+  if (response.status === 401 && retry) {
+    await refreshPair();
+    return apiRequest(path, options, false);
+  }
+  const data = await parseResponse(response);
+  if (!response.ok) {
+    throw new Error(data?.error || 'Ошибка запроса');
+  }
+  return data;
+}
 
-export const usersAPI = {
-  getAll: () => api.get('/users'),
-  getById: (id) => api.get(`/users/${id}`),
-  update: (id, data) => api.put(`/users/${id}`, data),
-  delete: (id) => api.delete(`/users/${id}`),
-};
+export async function login(email, password) {
+  const response = await fetch(`${API_BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await parseResponse(response);
+  if (!response.ok) {
+    throw new Error(data?.error || 'Ошибка входа');
+  }
+  setTokens(data);
+  return data;
+}
 
-export const productsAPI = {
-  getAll: () => api.get('/products'),
-  getById: (id) => api.get(`/products/${id}`),
-  create: (data) => api.post('/products', data),
-  update: (id, data) => api.put(`/products/${id}`, data),
-  delete: (id) => api.delete(`/products/${id}`),
-};
-
-export default api;
+export async function register(payload) {
+  const response = await fetch(`${API_BASE}/api/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+  const data = await parseResponse(response);
+  if (!response.ok) {
+    throw new Error(data?.error || 'Ошибка регистрации');
+  }
+  return data;
+}
